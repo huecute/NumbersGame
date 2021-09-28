@@ -36,12 +36,14 @@ wss.on("connection", (ws) => {
     if (Math.random() > 0.66) {
       state.bubbles.correct[id] = {
         id: id,
+        time: Date.now(),
         duration: duration,
       };
       ctx.fillText("4+4", 0, 0);
     } else {
       state.bubbles.wrong[id] = {
         id: id,
+        time: Date.now(),
         duration: duration,
       };
       ctx.fillText("4+2-2", 0, 0);
@@ -106,7 +108,13 @@ wss.on("connection", (ws) => {
         if (state.ended) {
           return;
         }
-        if (state.bubbles.correct[message.data.id]) {
+        if (
+          state.bubbles.correct[message.data.id] &&
+          state.bubbles.correct[message.data.id].time +
+            state.bubbles.correct[message.data.id].duration * 1000 >
+            Date.now()
+        ) {
+          delete state.bubbles.correct[message.data.id]; // TODO: delete other bubbles after expiration
           state.score += 1;
           ws.send(
             JSON.stringify({
@@ -118,7 +126,12 @@ wss.on("connection", (ws) => {
               },
             })
           );
-        } else if (state.bubbles.wrong[message.data.id]) {
+        } else if (
+          state.bubbles.wrong[message.data.id] &&
+          state.bubbles.wrong[message.data.id].time +
+            state.bubbles.wrong[message.data.id].duration * 1000 >
+            Date.now()
+        ) {
           state.score -= 1;
           ws.send(
             JSON.stringify({
