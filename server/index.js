@@ -30,6 +30,9 @@ wss.on("connection", (ws) => {
     let img;
     const canvas = createCanvas(200, 200);
     const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#000";
+    ctx.font = `${"normal"} ${18}px ${"Helvetica"}`;
+    ctx.textBaseline = "top"; // required
     if (Math.random() > 0.66) {
       state.bubbles.correct[id] = {
         id: id,
