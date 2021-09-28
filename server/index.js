@@ -108,17 +108,29 @@ wss.on("connection", (ws) => {
         }
         if (state.bubbles.correct[message.data.id]) {
           state.score += 1;
+          ws.send(
+            JSON.stringify({
+              signal: 5, // score update
+              data: {
+                id: message.data.id,
+                correct: true,
+                score: state.score,
+              },
+            })
+          );
         } else if (state.bubbles.wrong[message.data.id]) {
           state.score -= 1;
+          ws.send(
+            JSON.stringify({
+              signal: 5, // score update
+              data: {
+                id: message.data.id,
+                correct: false,
+                score: state.score,
+              },
+            })
+          );
         }
-        ws.send(
-          JSON.stringify({
-            signal: 5, // score update
-            data: {
-              score: state.score,
-            },
-          })
-        );
         break;
     }
   });
